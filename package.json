@@ -1,0 +1,34 @@
+{
+  "name": "event-scheduler-server",
+  "version": "1.0.0",
+  "description": "Server-side project for the Event Scheduler application. This will handle requests for both the admin and user client applications.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": "https://github.com/T-ZA/event-scheduler-server.git",
+  "author": "Ricky Sanders <ricky.sanders62@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "concurrently": "^4.1.0",
+    "eslint": "^5.14.1",
+    "eslint-plugin-graphql": "^3.0.3",
+    "lodash": "^4.17.11",
+    "nodemon": "^1.18.10",
+    "now-env": "^3.1.0"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.4.6",
+    "bcrypt": "^3.0.4",
+    "express": "^4.16.4",
+    "graphql": "^14.1.1",
+    "graphql-import": "^0.7.1",
+    "graphql-tools": "^4.0.4",
+    "jsonwebtoken": "^8.5.0",
+    "md5": "^2.2.1",
+    "merge-graphql-schemas": "^1.5.8",
+    "mongoose": "^5.4.15"
+  }
+}
