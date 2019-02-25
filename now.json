@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "name": "event-scheduler-server",
+  "alias": "event-scheduler-server",
+  "builds": [
+    {
+      "src": "index.js",
+      "use": "@now/node-server"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/.*",
+      "dest": "index.js"
+    }
+  ],
+  "env": {
+    "MONGO_URI": "@event-scheduler-mongo-uri",
+    "SECRET": "@event-scheduler-secret"
+  }
+}
