@@ -2,6 +2,28 @@ const Util = require('../util');
 
 const resolvers = {
   Query: {
+    getUser: async (_, { userId }, { User }) => {
+      const user = await User.findOne({ _id: userId }).populate([
+        {
+          path: 'userEvents',
+          ref: 'Event',
+        },
+        {
+          path: 'userSessions',
+          ref: 'Session',
+        },
+        {
+          path: 'adminEvents',
+          ref: 'Event',
+        },
+        {
+          path: 'userBuildings',
+          ref: 'Building',
+        },
+      ]);
+
+      return user;
+    },
     /*
       Checks the current status of which user is signed in. 
       If there is no user signed in, this function returns null.

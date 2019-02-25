@@ -1,7 +1,10 @@
-const fs = require('fs');
 const path = require('path');
+const { fileLoader, mergeTypes } = require('merge-graphql-schemas');
 
-const filePath = path.join(__dirname, 'typeDefs.graphql');
-const typeDefs = fs.readFileSync(filePath, 'utf-8');
+const typesArray = fileLoader(path.join(__dirname, './types/'), {
+  recursive: true,
+  extensions: ['.js'],
+});
+const typeDefs = mergeTypes(typesArray, { all: true });
 
 module.exports = typeDefs;
