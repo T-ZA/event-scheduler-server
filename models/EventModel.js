@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
 
 const EventSchema = new mongoose.Schema({
+  parentUser: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   eventTitle: {
     type: String,
     required: true,
@@ -33,7 +37,7 @@ const EventSchema = new mongoose.Schema({
   eventSessionTags: { type: [String] },
   eventGuests: {
     type: [mongoose.Schema.Types.ObjectId],
-    ref: 'SpecialGuest',
+    ref: 'Guest',
   },
   eventGuestTags: { type: [String] },
 });

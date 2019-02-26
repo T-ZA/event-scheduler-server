@@ -3,6 +3,7 @@ const { gql } = require('apollo-server-express');
 const typeDef = gql`
   type Event {
     _id: ID!
+    parentUser: User!
     eventTitle: String!
     eventDescription: String!
     eventStartTime: String!
@@ -11,7 +12,7 @@ const typeDef = gql`
     eventBuildings: [Building]
     eventSessions: [Session]
     eventSessionTags: [String]
-    eventGuests: [SpecialGuest]
+    eventGuests: [Guest]
     eventGuestTags: [String]
   }
 
@@ -20,16 +21,17 @@ const typeDef = gql`
   }
 
   type Mutation {
-    addEvent(
+    createEvent(
+      userId: ID!
       eventTitle: String!
       eventDescription: String!
       eventStartTime: String!
       eventEndTime: String!
       eventAddress: String!
     ): Event!
-    addEventBuilding(eventId: ID!, buildingId: ID!): Event!
-    addEventSessionTags(eventId: ID!, sessionTags: [String]!): Event!
-    addEventGuestTags(eventId: ID!, guestTags: [String]!): Event!
+    addBuildingToEvent(eventId: ID!, buildingId: ID!): Event!
+    addSessionTagsToEvent(eventId: ID!, sessionTags: [String]!): Event!
+    addGuestTagsToEvent(eventId: ID!, guestTags: [String]!): Event!
   }
 `;
 

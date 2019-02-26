@@ -1,7 +1,7 @@
 const { gql } = require('apollo-server-express');
 
 const typeDef = gql`
-  type SpecialGuest {
+  type Guest {
     _id: ID!
     parentEvent: Event!
     guestName: String!
@@ -10,16 +10,16 @@ const typeDef = gql`
   }
 
   type Query {
-    getSpecialGuestsForEvent(eventId: ID!): [SpecialGuest]
+    getGuestsForEvent(eventId: ID!): [Guest]
   }
 
   type Mutation {
-    addSpecialGuestToEvent(
+    addGuestToEvent(
       eventId: ID!
       guestName: String!
       guestDescription: String!
-    ): SpecialGuest!
-    addSessionToSpecialGuest(guestId: ID!, sessionId: ID!): SpecialGuest!
+    ): Guest!
+    addSessionToGuest(guestId: ID!, sessionId: ID!): Guest!
   }
 `;
 

@@ -11,7 +11,7 @@ const typeDef = gql`
     sessionEndTime: String!
     sessionHost: [String]
     sessionTags: [String]
-    sessionGuests: [SpecialGuest]
+    sessionGuests: [Guest]
   }
 
   type SessionLocation {

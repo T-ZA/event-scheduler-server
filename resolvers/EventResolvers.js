@@ -9,6 +9,14 @@ const resolvers = {
           path: 'eventBuildings',
           type: 'Building',
         },
+        {
+          path: 'eventSessions',
+          type: 'Session',
+        },
+        {
+          path: 'eventGuests',
+          type: 'Guest',
+        },
       ]);
 
       return event;
@@ -19,20 +27,28 @@ const resolvers = {
       Creates a new event with the given event details. If an existing event
       with the same name is found, then the event will not be created.
     */
-    addEvent: async (
+    createEvent: async (
       _,
       {
+        userId,
         eventTitle,
         eventDescription,
         eventStartTime,
         eventEndTime,
         eventAddress,
       },
-      { Event }
+      { Event, User }
     ) => {
-      // Check if an event with the given name already exists
-      const event = Event.findOne({ eventTitle });
+      // Verify the user trying to create the event
+      const user = await User.findOne({ _id: userId });
+      if (!user){
+        throw new Error(`User not found.`);
+      } else if (user && !user.isAdminUser){
+        throw new Error(`${user.email} is not an admin user.`);
+      }
 
+      // Check if an event with the given name already exists
+      const event = await Event.findOne({ eventTitle });
       if (event){
         throw new Error(
           `${eventTitle} already exists. Please create an event with a different name.`
@@ -41,13 +57,38 @@ const resolvers = {
 
       // If an existing event isn't found,
       // then create a new event with the mandatory fields
-      const newEvent = new Event({
+      const newEvent = await new Event({
+        parentUser: userId,
         eventTitle,
         eventDescription,
         eventStartTime,
         eventEndTime,
         eventAddress,
       }).save();
+
+      // Update the adminEvents of the user with the newly created event
+      const updatedUser = await User.findOneAndUpdate(
+        {_id: userId,},
+        {$push: { adminEvents: { $each: [newEvent._id] } },},
+        {new: true,}
+      ).populate([
+        {
+          path: 'userEvents',
+          model: 'Event',
+        },
+        {
+          path: 'userSessions',
+          model: 'Session',
+        },
+        {
+          path: 'adminEvents',
+          model: 'Event',
+        },
+        {
+          path: 'adminBuildings',
+          model: 'Building',
+        },
+      ]);
 
       return newEvent;
     },

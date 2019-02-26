@@ -65,7 +65,7 @@ const resolvers = {
       If an existing user with the same email is found,
       then the new user will not be created.
     */
-    signUpUser: async (_, { email, password }, { User }) => {
+    signUpUser: async (_, { email, password, isAdminUser }, { User }) => {
       // Locate a user with the given email
       const user = await User.findOne({ email });
 
@@ -80,6 +80,7 @@ const resolvers = {
       const newUser = await new User({
         email,
         password,
+        isAdminUser,
       }).save();
 
       // Return a JWT token to the UI for the newly registered user
@@ -90,4 +91,3 @@ const resolvers = {
 };
 
 module.exports = resolvers;
-// export default resolvers;
