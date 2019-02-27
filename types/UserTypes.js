@@ -18,7 +18,12 @@ const typeDef = gql`
   }
 
   type Mutation {
-    signUpUser(email: String!, password: String!, isAdminUser: Boolean): Token!
+    signUpUser(email: String!, password: String!, isAdminUser: Boolean): Token
+    signInUser(
+      email: String!
+      password: String!
+      adminApplication: Boolean
+    ): Token
   }
 `;
 
