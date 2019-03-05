@@ -5,6 +5,7 @@ const typeDef = gql`
     _id: ID!
     email: String!
     password: String!
+    isAdminUser: Boolean!
     userEvents: [Event]
     userSessions: [Session]
     adminEvents: [Event]
@@ -13,11 +14,16 @@ const typeDef = gql`
 
   type Query {
     getUser(userId: ID!): User!
-    getCurrentUser(userId: ID!): User
+    getCurrentUser: User
   }
 
   type Mutation {
-    signUpUser(email: String!, password: String!): Token
+    signUpUser(email: String!, password: String!, isAdminUser: Boolean!): Token
+    signInUser(
+      email: String!
+      password: String!
+      adminApplication: Boolean
+    ): Token
   }
 `;
 

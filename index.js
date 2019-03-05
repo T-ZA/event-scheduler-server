@@ -10,13 +10,13 @@ const Util = require('./util');
 // Read environment variables from now.json (used in Now deployment)
 require('now-env');
 
+/**************Mongoose Configuration/Setup*****************/
 // Translates ObjectId to a readable form on save
 const { ObjectId } = mongoose.Types;
 ObjectId.prototype.valueOf = function () {
   return this.toString();
 };
 
-/**************Mongoose Configuration/Setup*****************/
 // Connect to MLab Database
 mongoose
   .set('useCreateIndex', true)

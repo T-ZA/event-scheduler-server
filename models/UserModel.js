@@ -23,6 +23,12 @@ const UserSchema = new mongoose.Schema({
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Session',
   },
+  // Denotes whether a user is an admin user or not
+  isAdminUser: {
+    type: Boolean,
+    required: true,
+    default: '0',
+  },
   // Events that the admin user has created (allows them to edit it)
   adminEvents: {
     type: [mongoose.Schema.Types.ObjectId],

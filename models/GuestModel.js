@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const SpecialGuestSchema = new mongoose.Schema({
+const GuestSchema = new mongoose.Schema({
   parentEvent: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
@@ -20,4 +20,4 @@ const SpecialGuestSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('SpecialGuest', SpecialGuestSchema);
+module.exports = mongoose.model('Guest', GuestSchema);

@@ -1,4 +1,5 @@
 const Util = require('../util');
+const bcrypt = require('bcrypt');
 
 const resolvers = {
   Query: {
@@ -65,7 +66,7 @@ const resolvers = {
       If an existing user with the same email is found,
       then the new user will not be created.
     */
-    signUpUser: async (_, { email, password }, { User }) => {
+    signUpUser: async (_, { email, password, isAdminUser }, { User }) => {
       // Locate a user with the given email
       const user = await User.findOne({ email });
 
@@ -80,14 +81,48 @@ const resolvers = {
       const newUser = await new User({
         email,
         password,
+        isAdminUser,
       }).save();
 
       // Return a JWT token to the UI for the newly registered user
       // (allows for instant authentication on register)
       return { token: Util.createToken(newUser, process.env.SECRET, '1hr') };
     },
+    /*
+      Authenticate a user with the given user information.
+      If an existing user with the same password isn't found,
+      then the user will not be authenticated.
+    */
+    signInUser: async (_, { email, password, adminApplication }, { User }) => {
+      const user = await User.findOne({ email });
+      // If the user attempting to sign in doesn't exist,
+      // throw an error
+      if (!user){
+        throw new Error(`User ${email} not found.`);
+      }
+      // If the user is signing in to the admin application and is not an admin,
+      // throw an error
+      else if (
+        user &&
+        adminApplication &&
+        user.isAdminUser !== adminApplication
+      ){
+        throw new Error(
+          `${email} is not an admin user. Please sign in with an admin user.`
+        );
+      }
+
+      // Compare the password being used for sign-in
+      // with the stored password for the matching user.
+      // If the password doesn't match, throw an error
+      const isValidPassword = await bcrypt.compare(password, user.password);
+      if (!isValidPassword){
+        throw new Error('Invalid password');
+      }
+
+      return { token: Util.createToken(user, process.env.SECRET, '1hr') };
+    },
   },
 };
 
 module.exports = resolvers;
-// export default resolvers;
