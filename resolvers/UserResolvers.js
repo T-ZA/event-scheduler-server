@@ -58,6 +58,20 @@ const resolvers = {
 
       return user;
     },
+    /*
+      Returns the events that an admin user has created.
+    */
+    getAdminEvents: async (_, { userId }, { User, Event }) => {
+      // Locate the given user
+      const user = User.findOne({ _id: userId });
+      if (!user){
+        throw new Error(`User ID ${userId} not found`);
+      }
+
+      const events = Event.find({ parentUser: userId });
+
+      return events;
+    },
   },
 
   Mutation: {
