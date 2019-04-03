@@ -68,3 +68,6 @@ typings/
 
 # Now configuration
 now-secrets.json
+
+# VSCode directories
+.vscode/
