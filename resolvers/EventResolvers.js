@@ -4,7 +4,7 @@ const resolvers = {
       Retrieves an event with the given object ID.
     */
     getEvent: async (_, { eventId }, { Event }) => {
-      const event = await Event.find({ _id: eventId }).populate([
+      const event = await Event.findOne({ _id: eventId }).populate([
         {
           path: 'eventBuildings',
           type: 'Building',
@@ -68,9 +68,9 @@ const resolvers = {
 
       // Update the adminEvents of the user with the newly created event
       const updatedUser = await User.findOneAndUpdate(
-        {_id: userId,},
-        {$push: { adminEvents: { $each: [newEvent._id] } },},
-        {new: true,}
+        { _id: userId },
+        { $push: { adminEvents: { $each: [newEvent._id] } } },
+        { new: true }
       ).populate([
         {
           path: 'userEvents',
