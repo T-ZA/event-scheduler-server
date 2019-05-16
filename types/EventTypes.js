@@ -28,7 +28,8 @@ const typeDef = gql`
       eventStartTime: String!
       eventEndTime: String!
       eventAddress: String!
-    ): Event!
+    ): Event
+    deleteEvent(userId: ID!, eventId: ID!): Int
     addBuildingToEvent(eventId: ID!, buildingId: ID!): Event!
     addSessionTagsToEvent(eventId: ID!, sessionTags: [String]!): Event!
     addGuestTagsToEvent(eventId: ID!, guestTags: [String]!): Event!
