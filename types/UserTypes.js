@@ -15,6 +15,7 @@ const typeDef = gql`
   type Query {
     getUser(userId: ID!): User!
     getCurrentUser: User
+    getAdminEvents(userId: ID!): [Event]
   }
 
   type Mutation {
