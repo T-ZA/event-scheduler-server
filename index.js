@@ -33,7 +33,7 @@ const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: true,
-  playground: true,
+  playground: false,
   // Controlling the format of errors returned to UI
   // to have only the name and message
   formatError: (error) => {
@@ -42,7 +42,7 @@ const server = new ApolloServer({
       message: error.message.replace('Context creation failed:', ''),
     };
   },
-  context: async ({ req, connection }) => {
+  context: async ({ req }) => {
     // Get reference to JWT token in ApolloClient request
     const token = req.headers.authorization;
 

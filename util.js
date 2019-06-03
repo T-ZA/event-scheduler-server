@@ -8,13 +8,13 @@ const createToken = (user, secret, expiresIn) => {
 
 const getUser = async (token) => {
   if (token){
+    // Check the validity of the JWT token sent from the client.
     try {
-      // Check the validity of the JWT token sent from the client.
-      // If it cannot be
       return await jwt.verify(token, process.env.SECRET);
     } catch (err){
+      // If it cannot be verified, user's session has expired
       throw new AuthenticationError(
-        'You session has ended. Please sign in again'
+        'Your session has ended. Please sign in again'
       );
     }
   }

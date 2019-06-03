@@ -2,6 +2,12 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
 const UserSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    required: true,
+    unique: true,
+    trim: true,
+  },
   email: {
     type: String,
     required: true,
@@ -29,16 +35,16 @@ const UserSchema = new mongoose.Schema({
     required: true,
     default: '0',
   },
-  // Events that the admin user has created (allows them to edit it)
-  adminEvents: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Event',
-  },
-  // Buildings that the user has created (allows for reuse in future events)
-  adminBuildings: {
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Building',
-  },
+  // // Events that the admin user has created (allows them to edit it)
+  // adminEvents: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: 'Event',
+  // },
+  // // Buildings that the user has created (allows for reuse in future events)
+  // adminBuildings: {
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: 'Building',
+  // },
 });
 
 // Hash password so it can't be seen w/ access to database
@@ -48,16 +54,26 @@ UserSchema.pre('save', function (next) {
     return next();
   }
 
-  bcrypt.genSalt(10, (err, salt) => {
-    if (err) return next(err);
+  // bcrypt.genSalt(10, (err, salt) => {
+  //   if (err) return next(err);
 
-    bcrypt.hash(this.password, salt, (err, hash) => {
-      if (err) return next(err);
+  //   bcrypt.hash(this.password, salt, (err, hash) => {
+  //     if (err) return next(err);
 
+  //     this.password = hash;
+  //     next();
+  //   });
+  // });
+
+  bcrypt
+    .genSalt(10)
+    .then((salt) => {
+      return bcrypt.hash(this.password, salt);
+    })
+    .then((hash) => {
       this.password = hash;
       next();
     });
-  });
 });
 
 module.exports = mongoose.model('User', UserSchema);
