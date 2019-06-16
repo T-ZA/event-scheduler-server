@@ -89,11 +89,7 @@ const resolvers = {
 
       // Return a JWT token to the UI for the newly registered user
       // (allows for instant authentication on register)
-      return {
-        token: Util.createToken(newUser, process.env.SECRET, '1hr'),
-        _id: newUser._id,
-        email: newUser.email,
-      };
+      return { token: Util.createToken(newUser, process.env.SECRET, '30m') };
     },
     /*
       Authenticate a user with the given user information.
@@ -124,14 +120,10 @@ const resolvers = {
       // If the password doesn't match, throw an error
       const isValidPassword = await bcrypt.compare(password, user.password);
       if (!isValidPassword){
-        throw new Error('Invalid password');
+        throw new Error(`Invalid password`);
       }
 
-      return {
-        token: Util.createToken(user, process.env.SECRET, '1hr'),
-        _id: user._id,
-        email: user.email,
-      };
+      return { token: Util.createToken(user, process.env.SECRET, '1m') };
     },
   },
 };

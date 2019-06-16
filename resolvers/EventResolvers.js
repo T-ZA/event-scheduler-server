@@ -1,3 +1,5 @@
+const Util = require('../util');
+
 const resolvers = {
   Query: {
     /*
@@ -37,15 +39,9 @@ const resolvers = {
         eventEndTime,
         eventAddress,
       },
-      { Event, User }
+      { Event }
     ) => {
-      // Verify the user trying to create the event
-      const user = await User.findOne({ _id: userId });
-      if (!user){
-        throw new Error(`User not found.`);
-      } else if (user && !user.isAdminUser){
-        throw new Error(`${user.email} is not an admin user.`);
-      }
+      await Util.isAdminUser(userId);
 
       // Check if an event with the given name already exists
       const event = await Event.findOne({ eventTitle });
@@ -66,64 +62,19 @@ const resolvers = {
         eventAddress,
       }).save();
 
-      // Update the adminEvents of the user with the newly created event
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { $push: { adminEvents: { $each: [newEvent._id] } } },
-        { new: true }
-      ).populate([
-        {
-          path: 'userEvents',
-          model: 'Event',
-        },
-        {
-          path: 'userSessions',
-          model: 'Session',
-        },
-        {
-          path: 'adminEvents',
-          model: 'Event',
-        },
-        {
-          path: 'adminBuildings',
-          model: 'Building',
-        },
-      ]);
-
       return newEvent;
     },
-    deleteEvent: async (_, { userId, eventId }, { User, Event }) => {
-      // Verify the user trying to create the event
-      const user = await User.findOne({ _id: userId });
-      if (!user){
-        throw new Error(`User not found.`);
-      } else if (user && !user.isAdminUser){
-        throw new Error(`${user.email} is not an admin user.`);
-      }
-
-      // Verify that the given event actually exists
-      const event = await Event.findOne({ _id: eventId });
-      if (!event){
-        throw new Error(`Event does not exist or is already deleted.`);
-      }
-
-      // Verify that the given event is created by the user
-      const eventIndex = await user.adminEvents.indexOf(eventId);
-      if (eventIndex === -1){
-        throw new Error(`Event was not created by the user ${user.username}`);
-      }
+    /*
+      Deletes the given event. The deleted event is returned as a result.
+    */
+    deleteEvent: async (_, { userId, eventId }, { Event }) => {
+      // Verify that the given event actually exists and is created by the user
+      await Util.isEventCreatedByUser(userId, eventId);
 
       // Delete the event from the events colelction
       const deletedEvent = await Event.findOneAndDelete({ _id: eventId });
 
-      // Removes the given eventId from the user's adminEvents array
-      const updatedUser = await User.findOneAndUpdate(
-        { _id: userId },
-        { $pull: { adminEvents: eventId } },
-        { new: true }
-      );
-
-      return 1;
+      return deletedEvent;
     },
   },
 };

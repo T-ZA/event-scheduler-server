@@ -35,7 +35,7 @@ const SessionSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  sessionHost: {type: [String],},
+  sessionHost: { type: [String] },
   sessionTags: {
     type: [String],
     required: true,

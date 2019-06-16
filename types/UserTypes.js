@@ -13,8 +13,6 @@ const typeDef = gql`
 
   type UserSignIn {
     token: String!
-    _id: ID!
-    email: String!
   }
 
   type Query {

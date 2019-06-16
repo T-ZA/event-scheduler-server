@@ -1,6 +1,8 @@
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+// const TokenExpiredError = require('jsonwebtoken');
 
 const typeDefs = require('./typeDefs');
 const resolvers = require('./resolvers');
@@ -39,7 +41,10 @@ const server = new ApolloServer({
   formatError: (error) => {
     return {
       name: error.name,
-      message: error.message.replace('Context creation failed:', ''),
+      message: error.message.replace(
+        'Context creation failed:',
+        'Server Error:'
+      ),
     };
   },
   context: async ({ req }) => {
@@ -52,20 +57,65 @@ const server = new ApolloServer({
       Building,
       Session,
       SpecialGuest,
-      currentUser: await Util.getUser(token), // currentUser is used to determine who is currently signed in
+      currentUser: await Util.verifyUser(token), // currentUser is used to determine who is currently signed in
     };
   },
 });
 
-// console.log('server', server);
-
 /**************Express Configuration/Setup*****************/
-// Express configuration required to get Apollo Server to work for deployment
 const app = express();
 
 // Redirect all requests for base URL to hit the '/graphql' extended path
 app.get('/', (req, res) => {
   res.redirect('/graphql');
+});
+
+// Return new authentication token when an old one is received
+app.get('/token/new/:oldToken', async (req, res) => {
+  // Extract token information
+  const tokenPayload = jwt.decode(req.params.oldToken);
+  console.log(
+    `Token: ${tokenPayload._id} + ${tokenPayload.email} + ${
+      tokenPayload.password
+    }`
+  );
+
+  let needNewToken = false;
+
+  // Check that the token is valid and expired
+  try {
+    jwt.verify(req.params.oldToken, process.env.SECRET);
+  } catch (err){
+    if (err instanceof jwt.TokenExpiredError){
+      needNewToken = true;
+    } else {
+      console.error(err);
+      throw new Error(`Error: ${err}`);
+    }
+  }
+
+  if (needNewToken){
+    let newToken = '';
+
+    // Verify that the user in the received token is an actual user
+    const user = await User.findOne({ email: tokenPayload.email });
+
+    if (user){
+      newToken = Util.createToken(user, process.env.SECRET, '5m');
+
+      console.log(`New Token: ${newToken}`);
+
+      const data = {
+        message: `New token generated.`,
+        token: newToken,
+      };
+
+      res.append('Bearer', newToken);
+      res.status(200).send(data);
+    }
+  } else {
+    res.status(404).send(`Token not expired`);
+  }
 });
 
 // Apply Express server as middleware to Apollo Server
